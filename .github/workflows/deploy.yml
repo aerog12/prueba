@@ -2,7 +2,7 @@ name: Deploy de locos
 
 on:
   workflow_run:
-    workflows: ["Test"]
+    workflows: ["Java CI with Gradle"]
     types:
       - completed
 
@@ -21,6 +21,9 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
         aws-region: us-east-1
+      
+    - name: Give execute permission to gradlew
+      run: chmod +x gradlew
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -29,6 +32,13 @@ jobs:
         java-version: '17'
 
     - name: Build and deploy with Gradle
-      run: |
-        ./gradlew build
+      run: ./gradlew build
+    
+    - name: Set SHA variable
+      run: echo "SHA=${{github.sha}}">>$GITHUB_ENV
+
+    - name: Display Github Sha
+      run: echo $SHA
+
+        
         
